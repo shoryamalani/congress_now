@@ -1,0 +1,72 @@
+{
+    "bill": {
+        "actions": {
+            "count": 9,
+            "url": "https://api.congress.gov/v3/bill/117/s/2607/actions?format=json"
+        },
+        "committees": {
+            "count": 1,
+            "url": "https://api.congress.gov/v3/bill/117/s/2607/committees?format=json"
+        },
+        "congress": 117,
+        "cosponsors": {
+            "count": 69,
+            "countIncludingWithdrawnCosponsors": 70,
+            "url": "https://api.congress.gov/v3/bill/117/s/2607/cosponsors?format=json"
+        },
+        "introducedDate": "2021-08-04",
+        "latestAction": {
+            "actionDate": "2022-12-07",
+            "actionTime": "14:19:51",
+            "text": "Held at the desk."
+        },
+        "number": "2607",
+        "originChamber": "Senate",
+        "policyArea": {
+            "name": "International Affairs"
+        },
+        "relatedBills": {
+            "count": 1,
+            "url": "https://api.congress.gov/v3/bill/117/s/2607/relatedbills?format=json"
+        },
+        "sponsors": [
+            {
+                "bioguideId": "P000145",
+                "firstName": "Alex",
+                "fullName": "Sen. Padilla, Alex [D-CA]",
+                "isByRequest": "N",
+                "lastName": "Padilla",
+                "party": "D",
+                "state": "CA",
+                "url": "https://api.congress.gov/v3/member/P000145?format=json"
+            }
+        ],
+        "subjects": {
+            "count": 1,
+            "url": "https://api.congress.gov/v3/bill/117/s/2607/subjects?format=json"
+        },
+        "summaries": {
+            "count": 1,
+            "url": "https://api.congress.gov/v3/bill/117/s/2607/summaries?format=json"
+        },
+        "textVersions": {
+            "count": 2,
+            "url": "https://api.congress.gov/v3/bill/117/s/2607/text?format=json"
+        },
+        "title": "Iran Hostages Congressional Gold Medal Act",
+        "titles": {
+            "count": 4,
+            "url": "https://api.congress.gov/v3/bill/117/s/2607/titles?format=json"
+        },
+        "type": "S",
+        "updateDate": "2022-12-08T08:14:03Z",
+        "updateDateIncludingText": "2022-12-08T08:14:03Z"
+    },
+    "request": {
+        "billNumber": "2607",
+        "billType": "s",
+        "congress": "117",
+        "contentType": "application/json",
+        "format": "json"
+    }
+}

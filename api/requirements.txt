@@ -6,3 +6,7 @@ Jinja2==3.0.1
 MarkupSafe==2.0.1
 python-dotenv==0.17.1
 Werkzeug==2.0.1
+psycopg2==2.9.1
+pypika==0.48.9
+requests==2.26.0
+ratelimit==2.2.1

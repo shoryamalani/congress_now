@@ -1,20 +1,48 @@
 .App {
   text-align: center;
+  font-size:calc(10px+2vmin);
+  
 }
 
 .App-logo {
   height: 40vmin;
   pointer-events: none;
 }
-
-@media (prefers-reduced-motion: no-preference) {
+.MuiCardHeader-title{
+   font-size: 3rem !important ;
+   color:white !important; 
+   font-weight: bolder !important;
+}
+.MuiCard-root{
+  background-color: #00457E !important;
+}
+/* .MuiCardHeader-subtitle{
+  font-size: 2vmin;
+  color:grey; 
+} */
+.MuiTypography-body2 {
+  font-size: 1.25rem !important;
+  color:#f6f6f6; 
+}
+.MuiTypography-body1{
+  font-size: 1.5rem !important; 
+  color:white; 
+}
+/* @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
+} */
+.search_types_div{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  margin: 1rem;
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #02315E;
   min-height: 100vh;
   display: flex;
   flex-direction: column;

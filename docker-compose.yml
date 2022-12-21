@@ -4,10 +4,40 @@ services:
       context: .
       dockerfile: Dockerfile.api
     image: react-flask-app-api
+    depends_on:
+      - postgres_real
+    links:
+      - postgres_real:postgres_real
+    ports:
+      - "5000:5000"
+    networks:
+      - flasknet
   client:
     build:
       context: .
       dockerfile: Dockerfile.client
     image: react-flask-app-client
+    depends_on:
+      - api
     ports:
       - "3000:80"
+    networks:
+      - flasknet
+  postgres_real:
+    container_name: postgres_real
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    expose:
+      - "5432"
+    ports:
+      - "5432:5432"
+    networks:
+      - flasknet
+networks:
+  flasknet:
+    driver: bridge

@@ -3,9 +3,19 @@
 FROM python:3.9
 WORKDIR /app
 
-COPY api/requirements.txt api/api.py api/.flaskenv ./
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+COPY api/requirements.txt ./
 RUN pip install -r ./requirements.txt
+COPY  api/api.py api/.flaskenv api/dbs_worker.py api/congress_data_api.py api/propublica_data_worker.py api/.env ./ 
+COPY postgres/.env ./postgres/.env
+COPY api/dbs_scripts ./dbs_scripts
+
+# COPY ./api/ ./
+RUN ls
 ENV FLASK_ENV production
 
 EXPOSE 5000
+
 CMD ["gunicorn", "-b", ":5000", "api:app"]
