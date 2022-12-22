@@ -129,3 +129,4 @@ if __name__ == "__main__":
     data = get_all_members_both_houses()
     print(data[0])
     dbs_worker.save_members_to_db(dbs_worker.set_up_connection(),[{"id":info["id"],"propublica_api":info,"congress_api":None,"congress_api_detailed":None,"house_or_senate":"house" if info['title'] == 'Representative' else 'senate'} for info in data])
+    

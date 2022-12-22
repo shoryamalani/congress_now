@@ -132,10 +132,13 @@ def get_all_relevant_bill_info(bills):
         if member[2] != None and member[3] != None:
             member_data[member[0]] = {"pro":member[2],"con":member[3]}
         
-
+    propublica_only = []
     for bill in bills:
         if bill[5] != None:
             final_bills.append(bill[5])
+        elif bill[0] == None:
+            # final_bills.append(get_all_relevant_bill_info_from_propublica(bill[1],member_data))
+            propublica_only.append(bill[1])
         else:
             final_bill = {}
             bill_detailed = bill[4]['bill']
@@ -182,6 +185,65 @@ def get_all_relevant_bill_info(bills):
                 final_bill['relatedBills'] = None
             final_bills.append(final_bill)
             dbs_worker.add_display_info_to_bill(dbs_worker.set_up_connection(),bill_propublica['bill_id'].replace("-","_").upper(),json.dumps(final_bill))
+    propublica_only = get_all_relevant_bill_info_from_propublica(propublica_only)
+    for bill in propublica_only:
+        final_bills.append(bill)
+    return final_bills
+def get_all_relevant_bill_info_from_propublica(bills):
+    final_bills = []
+    members = dbs_worker.get_all_members(dbs_worker.set_up_connection())
+    member_data = {}
+
+    for member in members:
+        if member[2] != None and member[3] != None:
+            member_data[member[0]] = {"pro":member[2],"con":member[3]}
+        
+
+    for bill in bills:
+        final_bill = {}
+        bill_propublica = bill
+        # final_bill['name'] = bill_propublica['bill_id'].replace("-"," ").upper()
+        final_bill['name'] = bill_propublica['short_title']
+        final_bill['url'] = bill_propublica['congressdotgov_url']
+        final_bill['govtrack'] = bill_propublica['govtrack_url']
+        final_bill['sponsor'] = bill_propublica['sponsor_title'] + ' ' + bill_propublica['sponsor_name'] + ' (' + bill_propublica['sponsor_party'] + '-' + bill_propublica['sponsor_state'] + ')'
+        final_bill['sponsorId'] = bill_propublica['sponsor_id']
+        if final_bill['sponsorId'] in member_data:
+            final_bill['photo'] = member_data[final_bill['sponsorId']]['con']['depiction']['imageUrl']
+            final_bill['url'] = member_data[final_bill['sponsorId']]['pro']['url']
+        final_bill['sponsorParty'] = bill_propublica['sponsor_party']
+        final_bill['sponsorState'] = bill_propublica['sponsor_state']
+        final_bill['summary'] = bill_propublica['summary']
+        final_bill['slug'] = bill_propublica['bill_id']
+
+        # if 'data' in bill_detailed['summaries']:
+        #     final_bill['summary'] =bill_detailed['summaries']['data']['summaries'][0]['text']
+        final_bill['introducedDate'] = bill_propublica['introduced_date']
+        final_bill['lastActionDate'] = bill_propublica['latest_major_action_date']
+        final_bill['lastAction'] = bill_propublica['latest_major_action']
+        final_bill['votes'] = []
+        # if bill_propublica['votes'] != []:
+        #     final_bill['lastVoteDate'] = bill_propublica['votes'][-1]
+        # else:
+        #     final_bill['lastVoteDate'] = None
+        if bill_propublica['cosponsors'] == 0:
+            final_bill['cosponsors'] = 0
+            final_bill['cosponsors_by_party'] = {"R":0,"D":0}
+        else:
+            final_bill['cosponsors'] = bill_propublica['cosponsors']
+            final_bill['cosponsors_by_party'] = bill_propublica['cosponsors_by_party']
+            if "R" not in final_bill['cosponsors_by_party']:
+                final_bill['cosponsors_by_party']['R'] = 0
+            if "D" not in final_bill['cosponsors_by_party']:
+                final_bill['cosponsors_by_party']['D'] = 0
+        final_bill['committees'] = bill_propublica['committees']
+        final_bill['primarySubject'] = bill_propublica['primary_subject']
+        # if 'relatedBills' in bill_detailed:
+        #     final_bill['relatedBills'] = bill_detailed['relatedBills']
+        # else:
+        final_bill['relatedBills'] = None
+        final_bills.append(final_bill)
+        dbs_worker.add_display_info_to_bill(dbs_worker.set_up_connection(),bill_propublica['bill_id'].replace("-","_").upper(),json.dumps(final_bill))
     return final_bills
 
 def save_bills(bills):

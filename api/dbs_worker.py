@@ -92,6 +92,8 @@ def get_all_recent_bills(conn,tot):
     bills = get_all_bills(conn)
     final_bills = {}
     for bill in bills:
+        if bill[0] == None:
+            continue
         if bill[0]['latestAction']['actionDate'] in final_bills:
             final_bills[bill[0]['latestAction']['actionDate']].append(bill)
         else:
@@ -124,7 +126,7 @@ def get_all_bills(conn):
         return data[1].fetchall()
 def update_bill(conn,bill_name,data):
     bills_table = pypika.Table('bills')
-    a = pypika.Query.update(bills_table).set(bills_table.congress_api,data['congress_api']).set(bills_table.congress_api_detailed,data['congress_api_detailed']).where(bills_table.bill_name == bill_name)
+    a = pypika.Query.update(bills_table).set(bills_table.congress_api,data['congress_api']).set(bills_table.congress_api_detailed,data['congress_api_detailed']).where(bills_table.bill_name == bill_name.upper())
     # pypika.Query.update('bills')._update_sql
     # congress_write = write_and_read_to_database.make_update_db('bills','congress_api',data['congress_api'],'bill_name',bill_name)
     # congress_write = write_and_read_to_database.make_write_to_db('bills',(bill_name,congress_data),('bill_name','congress_api'))
@@ -133,7 +135,7 @@ def update_bill(conn,bill_name,data):
 def update_bills_with_propublica(conn,bills_data_tuple):
     bills_table = pypika.Table('bills')
     for bill in bills_data_tuple:
-        a = pypika.Query.update(bills_table).set(bills_table.propublica_api,json.dumps(bill[1])).where(bills_table.bill_name == bill[0])
+        a = pypika.Query.update(bills_table).set(bills_table.propublica_api,json.dumps(bill[1])).where(bills_table.bill_name == bill[0].upper())
         [conn,cur] = execute_db.execute_database_command(conn,a.get_sql())
         conn.commit()
 
@@ -279,10 +281,69 @@ def add_display_info_to_bill(conn,bill_id,bill_data):
     members_table = pypika.Table('bills')
     a = pypika.Query.update(members_table)
     a = a.set(members_table.display_data,bill_data)
-    a = a.where(members_table.bill_name == bill_id)
+    a = a.where(members_table.bill_name == bill_id.upper())
     [conn,cur] = execute_db.execute_database_command(conn,a.get_sql())
     print(a.get_sql())
     conn.commit()
+
+def check_if_bill_exists(conn,bill_id):
+    members_table = pypika.Table('bills')
+    a = pypika.Query.from_(members_table).select('*').where(members_table.bill_name == bill_id.upper())
+    print(a.get_sql())
+    data = execute_db.execute_database_command(conn,a.get_sql())
+    if data[1].rowcount == 0:
+        return False
+    else:
+        return True
+
+def add_bills_with_propublica(conn,bills):
+    bills_table = pypika.Table('bills')
+    for bill in bills:
+        #check if bill exists
+        if check_if_bill_exists(conn,bill['bill_id'].replace("-","_").upper()):
+            continue
+        a = pypika.Query.into(bills_table).columns('bill_name','propublica_api').insert(bill['bill_id'].replace("-","_").upper(),json.dumps(bill))
+        [conn,cur] = execute_db.execute_database_command(conn,a.get_sql())
+        conn.commit()
+
+def check_if_table_exists(conn,table_name):
+    members_table = pypika.Table(table_name)
+    a = pypika.Query.from_(members_table).select('*')
+    data = execute_db.execute_database_command(conn,a.get_sql())
+    if data[1].rowcount == 0:
+        return False
+    else:
+        return True
+
+def create_sys_info_table(conn):
+    members_table = pypika.Table('sys_info')
+    if check_if_table_exists(conn,'sys_info'):
+        return
+    a = pypika.Query.create_table(members_table).if_not_exists().columns(
+        pypika.Column('id',pypika.Int()),
+        pypika.Column('last_updated',pypika.DateTime()),
+        pypika.Column('data',pypika.JSON())
+    )
+    [conn,cur] = execute_db.execute_database_command(conn,a.get_sql())
+    conn.commit()
+    a = pypika.Query.into(members_table).columns('id','last_updated','data').insert(1,datetime.datetime.now(),json.dumps({'bills_recent':str(datetime.datetime.now()-datetime.timedelta(days=1)),'members_recent':str(datetime.datetime.now()-datetime.timedelta(days=1))}))
+
+
+def check_if_bills_updated_in_last_12_hours(conn):
+    if check_if_table_exists(conn,'sys_info'):
+        a = pypika.Query.from_('sys_info').where('id = 1')
+        data = execute_db.execute_database_command(conn,a.get_sql())
+        if data[1].rowcount == 0:
+            return False
+        else:
+            data = data[1].fetchall()
+            data = json.loads(data[0][2])
+            if datetime.datetime.now() - datetime.datetime.strptime(data['bills_recent'],'%Y-%m-%d %H:%M:%S.%f') > datetime.timedelta(hours=12):
+                return False
+            else:
+                return True
+
+
 if __name__ == "__main__":
     # get_recent_info()
     save_display_data()

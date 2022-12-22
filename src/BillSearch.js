@@ -15,6 +15,7 @@ import MuiGrid from '@mui/material/Grid';
 import Divider from '@mui/material/Divider';
 import { StyledEngineProvider } from '@mui/material/styles';
 import { LoadingButton } from '@mui/lab';
+import ManyBillView from './ManyBillView';
 const Grid = styled(MuiGrid)(({ theme }) => ({
   width: '100%',
   '& [role="separator"]': {
@@ -163,6 +164,7 @@ export default function BillSearch(props) {
         </Grid>
       </Grid>
       </ThemeProvider>
+      <ManyBillView currentBills={bills}></ManyBillView>
       </StyledEngineProvider>
 
     );

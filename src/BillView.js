@@ -33,7 +33,7 @@ const ExpandMore = styled((props) => {
 
 export default function BillView(props) {
   const [expanded, setExpanded] = React.useState(false);
-  console.log(props)
+  // console.log(props)
   props = props['bill']
   const handleExpandClick = () => {
     setExpanded(!expanded);
