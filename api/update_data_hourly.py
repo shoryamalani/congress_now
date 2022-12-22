@@ -12,5 +12,7 @@ def set_up_hourly_data_server():
 
 
 def update_bills():
-    bills = propublica_data_worker.get_current_house_and_senate_bills()
+    if not dbs_worker.check_if_bills_updated_in_last_12_hours(dbs_worker.set_up_connection()):
+        print("Updating bills")
+        dbs_worker.get_recent_info(dbs_worker.set_up_connection())
     

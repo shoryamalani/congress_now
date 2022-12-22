@@ -71,8 +71,8 @@ def get_current_house_and_senate_bills():
     #     bills.append([])
     return bills
 
-def get_bill_data(bill_name):
-    url = f'https://api.propublica.org/congress/v1/{CURRENT_CONGRESS}/bills/{bill_name}.json'
+def get_bill_data(bill_name,congress_num=CURRENT_CONGRESS):
+    url = f'https://api.propublica.org/congress/v1/{congress_num}/bills/{bill_name}.json'
     headers = {'X-API-Key': api_key}
     data = send_request(url,headers)
     if 'results' in data:

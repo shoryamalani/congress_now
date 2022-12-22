@@ -34,7 +34,19 @@ def get_current_bills_total(fromDate):
 
 
 def get_detailed_bill_info(bill_info):
-    url = bill_info['url']
+    if type(bill_info) is not dict:
+        bill_type = ""
+        bill_number = ""
+        for char in bill_info.split('_')[0]:
+            if char.isdigit():
+                bill_number += char
+            else:
+                bill_type += char
+        url = BASE_API_URL + "/bill/" + bill_info.split('_')[1] + '/' + bill_type + "/" + bill_number
+        print(url)
+    else:
+        url = bill_info['url']
+
     headers = {'X-API-Key': API_KEY}
     bill = send_request(url,headers,{})
     # get subjects
@@ -62,17 +74,18 @@ def get_current_bills():
     data = get_current_bills_total(datetime.datetime.now() - datetime.timedelta(days=6))['bills']
     return data
 
-def save_detailed_bills(starting_bills):
-    data = []
-    for bill in starting_bills:
-        if bill[4]== None:
-            data.append(bill[0])
-    print(len(data))
+def save_detailed_bills_with_congress_start(starting_bills):
+    # data = []
+    # for bill in starting_bills:
+    #     if bill[4]== None:
+    #         data.append(bill[0])
+    # print(len(data))
     bills = {}
     threads = []
     with ThreadPoolExecutor(max_workers=20) as executor:
-        for info in data:
-            threads.append(executor.submit(get_detailed_bill_info,info))
+        for info in starting_bills:
+            if info[0] == None:
+                threads.append(executor.submit(get_detailed_bill_info,info))
             # data_threads = [{"congress_open":bill,"congress_detailed":executor.submit(get_detailed_bill_info,bill)} for bill in data[:1]]
             bills[dbs_worker.get_bill_name(info)] = [json.dumps(info)]
         print(bills)
@@ -206,7 +219,7 @@ def get_all_relevant_bill_info_from_propublica(bills):
         final_bill['name'] = bill_propublica['short_title']
         final_bill['url'] = bill_propublica['congressdotgov_url']
         final_bill['govtrack'] = bill_propublica['govtrack_url']
-        final_bill['sponsor'] = bill_propublica['sponsor_title'] + ' ' + bill_propublica['sponsor_name'] + ' (' + bill_propublica['sponsor_party'] + '-' + bill_propublica['sponsor_state'] + ')'
+        final_bill['sponsor'] = bill_propublica['sponsor_title'] + ' ' + bill_propublica['sponsor'] + ' (' + bill_propublica['sponsor_party'] + '-' + bill_propublica['sponsor_state'] + ')'
         final_bill['sponsorId'] = bill_propublica['sponsor_id']
         if final_bill['sponsorId'] in member_data:
             final_bill['photo'] = member_data[final_bill['sponsorId']]['con']['depiction']['imageUrl']
@@ -249,7 +262,7 @@ def get_all_relevant_bill_info_from_propublica(bills):
 def save_bills(bills):
     conn = dbs_worker.set_up_connection()
     final_bills = [(dbs_worker.get_bill_name(bill),json.dumps(bill),None) for bill in bills]
-    dbs_worker.write_bills(conn,final_bills)
+    dbs_worker.write_bills_and_overwrite(conn,final_bills)
     # for bill in bills:
     #     print(bill)
     #     dbs_worker.write_bill(conn,dbs_worker.get_bill_name(bill),bill)
