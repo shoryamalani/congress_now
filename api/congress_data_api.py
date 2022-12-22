@@ -74,6 +74,10 @@ def get_current_bills():
     data = get_current_bills_total(datetime.datetime.now() - datetime.timedelta(days=6))['bills']
     return data
 
+def get_current_bills_after(start_date):
+    data = get_current_bills_total(datetime.datetime.strptime(start_date,"%Y-%m-%d %H:%M:%S.%f"))['bills']
+    return data
+
 def save_detailed_bills_with_congress_start(starting_bills):
     # data = []
     # for bill in starting_bills:
@@ -125,6 +129,19 @@ def get_current_house_members():
     params = {"limit":'250'}
     members = send_request(url,headers,params)
     return members
+def get_member_detailed_sponsored(member):
+    url = BASE_API_URL + "/member/" + member + "/sponsored-legislation"
+    headers = {'X-API-Key': API_KEY}
+    params = {"limit":'250'}
+    bills = send_request(url,headers,params)
+    return bills
+
+def get_member_detailed_cosponsored(member):
+    url = BASE_API_URL + "/member/" + member + "/cosponsored-legislation"
+    headers = {'X-API-Key': API_KEY}
+    params = {"limit":'250'}
+    bills = send_request(url,headers,params)
+    return bills
 
 
 
@@ -215,6 +232,8 @@ def get_all_relevant_bill_info_from_propublica(bills):
     for bill in bills:
         final_bill = {}
         bill_propublica = bill
+        if bill_propublica == None:
+            continue
         # final_bill['name'] = bill_propublica['bill_id'].replace("-"," ").upper()
         final_bill['name'] = bill_propublica['short_title']
         final_bill['url'] = bill_propublica['congressdotgov_url']
@@ -261,14 +280,27 @@ def get_all_relevant_bill_info_from_propublica(bills):
 
 def save_bills(bills):
     conn = dbs_worker.set_up_connection()
-    final_bills = [(dbs_worker.get_bill_name(bill),json.dumps(bill),None) for bill in bills]
-    dbs_worker.write_bills_and_overwrite(conn,final_bills)
+    final_bills = [(dbs_worker.get_bill_name(bill),bill,None,True) for bill in bills]
+    dbs_worker.write_bills_for_later_from_cong(conn,final_bills)
     # for bill in bills:
     #     print(bill)
     #     dbs_worker.write_bill(conn,dbs_worker.get_bill_name(bill),bill)
 
 # data = dbs_worker.get_all_bills(dbs_worker.set_up_connection())
+
+def get_current_congress():
+    #get congress number
+    url = BASE_API_URL + "/congress"
+    headers = {'X-API-Key': API_KEY}
+    data = send_request(url, headers, {})
+    num = ""
+    for char in data['congresses'][0]["name"]:
+        if char.isdigit():
+            num += char
+    return int(num)
+
 if __name__ == "__main__":
-    data = get_current_house_members()
-    print(data)
-    print(len(data["members"]))
+    # data = get_current_house_members()
+    # print(data)
+    # print(len(data["members"]))
+    print(get_current_congress())

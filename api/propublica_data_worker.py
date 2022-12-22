@@ -37,6 +37,12 @@ def get_current_member(member_id):
     headers = {'X-API-Key': api_key}
     return send_request(url,headers)
 
+def get_member_vote_positions(member_id):
+    url = f'https://api.propublica.org/congress/v1/members/{member_id}/votes.json'
+    headers = {'X-API-Key': api_key}
+    params = {'per_page': 250}
+    return send_request(url,headers)
+
 def get_current_house_members():
     url = f'https://api.propublica.org/congress/v1/{CURRENT_CONGRESS}/house/members.json'
     headers = {'X-API-Key': api_key}
@@ -74,7 +80,8 @@ def get_current_house_and_senate_bills():
 def get_bill_data(bill_name,congress_num=CURRENT_CONGRESS):
     url = f'https://api.propublica.org/congress/v1/{congress_num}/bills/{bill_name}.json'
     headers = {'X-API-Key': api_key}
-    data = send_request(url,headers)
+    params = {'slug': bill_name}
+    data = send_request(url,headers,params)
     if 'results' in data:
         return data['results'][0]
     return None
