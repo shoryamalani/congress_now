@@ -34,18 +34,18 @@ def set_up_connection():
 
         # dotenv_path = os.path.join(os.path.dirname(__file__), '/postgres/.env')
         # print(dotenv_path)
-        print(os.listdir())
+        # print(os.listdir())
         # # Load file from the path
         # print(dotenv.load_dotenv(dotenv_path,verbose=True))
         # print(dotenv.dotenv_values(dotenv_path).items())
         dotenv.load_dotenv()
 
         # set up connection to postgres
-        print(os.environ)
-        print(os.environ.get('DB_HOST'))
+        # print(os.environ)
+        # print(os.environ.get('DB_HOST'))
 
         conn = psycopg2.connect(
-            host=os.environ.get('localhost'),
+            host='localhost:5432',
             database=os.environ.get('POSTGRES_DB'),
             user=os.environ.get('POSTGRES_USER'),
             password=os.environ.get('POSTGRES_PASSWORD')
