@@ -87,9 +87,7 @@ export default function BillView(props) {
         </Typography>
       </CardContent>
       <CardContent>
-        <Typography variant="body2" color="text.secondary">
-          introduced on: {props['introducedDate']}
-        </Typography>
+        
         
         <Typography variant="body2" color="text.primary">
           update on {props['lastActionDate']}: {props['lastAction']}
@@ -104,9 +102,7 @@ export default function BillView(props) {
         <Typography variant="body2" color="text.primary">
           <span> Primary Subject: {props['primarySubject']}</span>
         </Typography>
-        <Typography variant="body2" color="text.primary">
-          <span> GovTrack: <a href={props['govtrack']}>{props['govtrack']} </a></span>
-        </Typography>
+        
 
       </CardContent>
       <CardContent>
@@ -139,12 +135,20 @@ export default function BillView(props) {
         </ExpandMore>
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <CardContent>
+      <CardContent>
+        {/* 
           <Typography paragraph>Method:</Typography>
           <Typography paragraph>
             Heat 1/2 cup of the broth in a pot until simmering, add saffron and set
             aside for 10 minutes.
           </Typography>
+         */}
+        <Typography variant="body2" color="text.secondary">
+          introduced on: {props['introducedDate']}
+        </Typography>
+        <Typography variant="body2" color="text.primary">
+          <span> GovTrack: <a href={props['govtrack']}>{props['govtrack']} </a></span>
+        </Typography>
         </CardContent>
       </Collapse>
     </Card>

@@ -10,3 +10,5 @@ psycopg2==2.9.1
 pypika==0.48.9
 requests==2.26.0
 ratelimit==2.2.1
+schedule==1.1.0
+loguru==0.5.1

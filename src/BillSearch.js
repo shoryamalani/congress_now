@@ -113,8 +113,8 @@ export default function BillSearch(props) {
       {/* <Divider orientation="vertical" flexItem></Divider> */}
       
       </div>
-      <Grid container>
-        <Grid item xs>
+      {/* <Grid container> */}
+        {/* <Grid item xs>
         <div>
       <p>
           Search By Subject
@@ -130,8 +130,8 @@ export default function BillSearch(props) {
                     }
                 }
             }
-        }}
-            labelId="demo-multiple-checkbox-label"
+        }} */}
+            {/* labelId="demo-multiple-checkbox-label"
             id="demo-multiple-checkbox"
             // multiple
             value={personName}
@@ -139,8 +139,8 @@ export default function BillSearch(props) {
             input={<OutlinedInput label="Tag" />}
             renderValue={(selected) => selected.join(', ')}
             MenuProps={MenuProps}
-          >
-            {names.map((name) => (
+          > */}
+            {/* {names.map((name) => (
               <MenuItem key={name} value={name}>
                 <Checkbox checked={personName.indexOf(name) > -1} />
                 <ListItemText primary={name} />
@@ -150,9 +150,9 @@ export default function BillSearch(props) {
         </FormControl><br></br>
         <LoadingButton loading={loading_val} loadingIndicator="Loading…" variant="outlined" onClick={searchBills}>Fetch data</LoadingButton>
       </div>
-        </Grid>
-        <Divider orientation="vertical" flexItem>
-        </Divider>
+        </Grid> */}
+        {/* <Divider orientation="vertical" flexItem>
+        </Divider> */}
         <Grid item xs>
         <div>
         <p>
@@ -162,7 +162,7 @@ export default function BillSearch(props) {
         <LoadingButton loading={loading_val} loadingIndicator="Loading…" variant="outlined" onClick={searchBillsText}>Fetch data</LoadingButton>
       </div>
         </Grid>
-      </Grid>
+      {/* </Grid> */}
       </ThemeProvider>
       <ManyBillView currentBills={bills}></ManyBillView>
       </StyledEngineProvider>

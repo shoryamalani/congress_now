@@ -24,13 +24,13 @@ def bill_page(bill_slug):
 
 @app.route('/api/bill/<bill_slug>')
 def bill_data(bill_slug):
-    data = congress_data_api.get_bill_data(bill_slug)
+    data = congress_data_api.get_bill_data(bill_slug.upper())
     return jsonify(data)
 
 @app.route('/api/all_bills')
 def all_bills():
     if not os.path.isfile('current_all_bills.json'):
-        data = get_current_data()
+        data = congress_data_api.get_current_data()
         return jsonify(data)
     else:
         with open('current_all_bills.json','r') as f:
@@ -39,7 +39,7 @@ def all_bills():
 
 @app.route('/api/force_get_data',methods=['GET'])
 def force_get_data():
-    data = get_current_data()
+    data = congress_data_api.get_current_data()
     return jsonify(data)
 
 @app.route('/api/bill_search_text',methods=['POST'])
@@ -53,13 +53,7 @@ def search_bills_text():
 
 
 
-def get_current_data():
-    conn = dbs_worker.set_up_connection()
-    data = dbs_worker.get_all_recent_bills(conn,50)
-    # data = congress_data_api.get_all_relevant_bill_info(dbs_worker.get_all_bills(dbs_worker.set_up_connection()))
-    with open('current_all_bills.json','w') as f:
-        f.write(json.dumps(data))
-    return data
+
 
 
 

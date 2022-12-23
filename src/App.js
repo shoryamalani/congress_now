@@ -58,7 +58,7 @@ function App() {
 
           <Switch>
             <Route path="/bill/:slug" >
-              <p>Bill View:</p>
+              <p>Single Bill View:</p>
               <SingleBillView/>
               {/* <BillView bill={getBill(useParams().slug)} /> */}
               <ManyBillView currentBills={bills} />
