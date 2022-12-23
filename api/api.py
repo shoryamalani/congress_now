@@ -51,7 +51,14 @@ def search_bills_text():
     bills_display = congress_data_api.get_all_relevant_bill_info_from_propublica(bills)
     return jsonify(bills_display)
 
-
+@app.route('/api/test_backend')
+def test_backend():
+    conn = dbs_worker.set_up_connection()
+    try:
+        all_bills = dbs_worker.get_all_bills(conn)
+        return "Backend is up"
+    except:
+        return "Backend is down"
 
 
 
