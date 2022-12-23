@@ -254,7 +254,7 @@ def get_all_relevant_bill_info_from_propublica(bills,member_data=None):
         # final_bill['name'] = bill_propublica['bill_id'].replace("-"," ").upper()
         final_bill['name'] = bill_propublica['short_title']
         final_bill['url'] = bill_propublica['congressdotgov_url']
-        final_bill['congress_now_url'] = "http://localhost:3001" + "/bill/" + bill[3]
+        final_bill['congress_now_url'] = "http://congressnow.shoryamalani.com" + "/bill/" + bill['bill_id'].replace("-","_").upper()
         if 'govtrack_url' in bill_propublica:
             final_bill['govtrack'] = bill_propublica['govtrack_url']
         else:
