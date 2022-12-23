@@ -592,13 +592,16 @@ def get_all_members_in_current_congress(conn,congress_num):
 
 if __name__ == "__main__":
     # pass
+    create_sys_info_table()
+    make_table_bills()
+    make_table_members()
     # add_update_to_bills(set_up_connection())  
     # update_bills(set_up_connection(),50)
     # make_table_members()
     # members = propublica_data_worker.get_all_members_both_houses()
     # get_and_update_member_info(set_up_connection(),members[0]["id"])
     # create_sys_info_table(set_up_connection())
-    rethink_bills(set_up_connection())
+    # rethink_bills(set_up_connection())
     # set_updated_bills_with_time(set_up_connection(),(datetime.datetime.now()-datetime.timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S.%f"))
     # remove_bill_repeats(set_up_connection())
     # get_recent_info()
