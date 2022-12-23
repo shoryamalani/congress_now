@@ -117,6 +117,8 @@ def get_all_recent_bills(conn,tot):
             for bill in final_bills[date.strftime('%Y-%m-%d')]:
                 final_bills_list.append(bill)
                 total += 1
+        else:
+            break
         date = date - datetime.timedelta(days=1)
     return congress_data_api.get_all_relevant_bill_info(final_bills_list)
     # return bills
