@@ -89,16 +89,21 @@ def get_bill_name(bill_congress):
     bill_congress['bill_name'] = bill_congress['type'] + str(bill_congress['number']) + '_' + str(bill_congress['congress'])
     return bill_congress['bill_name'].upper()
 
+def get_all_bills_that_have_been_updated(conn):
+    bills = pypika.Table('bills')
+    query = Query.from_(bills).select('*').where(bills.to_update==False)
+    data = execute_db.execute_database_command(conn,query.get_sql())
+    return data[1].fetchall()
+
 def get_all_recent_bills(conn,tot):
-    bills = get_all_bills(conn)
+    # bills = get_all_bills(conn)
+    bills = get_all_bills_that_have_been_updated(conn)[:tot]
     final_bills = {}
     for bill in bills:
-        if bill[0] == None:
-            continue
-        if bill[0]['latestAction']['actionDate'] in final_bills:
-            final_bills[bill[0]['latestAction']['actionDate']].append(bill)
+        if bill[1]['latest_major_action_date'] in final_bills:
+            final_bills[bill[1]['latest_major_action_date']].append(bill)
         else:
-            final_bills[bill[0]['latestAction']['actionDate']] = [bill]
+            final_bills[bill[1]['latest_major_action_date']] = [bill]
     #get most recent 100 bills
     final_bills_list = []
     total = 0
@@ -166,10 +171,14 @@ def add_update_to_bills(conn):
 
     [conn,cur] = execute_db.execute_database_command(conn,a.get_sql())
     conn.commit()
+    rethink_bills(conn)
+    
+def rethink_bills(conn):
+    bills = pypika.Table('bills')
     all_bills = get_all_bills(conn)
     for bill in all_bills:
         set_to_update = False
-        for key in bill:
+        for key in bill[1:5]:
             if key == None:
                 set_to_update = True
         if set_to_update == True:
@@ -229,8 +238,17 @@ def get_and_update_member_info(conn,member_id,propublica_data=None):
     #Congress API update
     
     congress_member = congress_data_api.get_current_member_detailed(member_id)['member']
-    congress_member_sponsored = congress_data_api.get_member_detailed_sponsored(member_id)['sponsoredLegislation']
-    congress_member_cosponsored = congress_data_api.get_member_detailed_cosponsored(member_id)['cosponsoredLegislation']
+
+    congress_member_sponsored = congress_data_api.get_member_detailed_sponsored(member_id)
+    if congress_member_sponsored == None:
+        congress_member_sponsored = []
+    else:
+        congress_member_sponsored = congress_member_sponsored['sponsoredLegislation']
+    congress_member_cosponsored = congress_data_api.get_member_detailed_cosponsored(member_id)
+    if congress_member_cosponsored == None:
+        congress_member_cosponsored = []
+    else:
+        congress_member_cosponsored = congress_member_cosponsored['cosponsoredLegislation']
     sponsored_and_cosponsored = {"sponsored":congress_member_sponsored,"cosponsored":congress_member_cosponsored}
     #ProPublica API update
     if propublica_data == None:
@@ -355,7 +373,7 @@ def get_all_members(conn):
     print(a.get_sql())
     data = execute_db.execute_database_command(conn,a.get_sql())
     if data[1].rowcount == 0:
-        return False
+        return []
     else:
         return data[1].fetchall()
 
@@ -400,7 +418,6 @@ def add_display_info_to_bill(conn,bill_id,bill_data):
     a = a.set(members_table.display_data,bill_data)
     a = a.where(members_table.bill_name == bill_id.upper())
     [conn,cur] = execute_db.execute_database_command(conn,a.get_sql())
-    print(a.get_sql())
     conn.commit()
 
 def check_if_bill_exists(conn,bill_id):
@@ -413,6 +430,15 @@ def check_if_bill_exists(conn,bill_id):
     else:
         return True
 
+def get_bill(conn,bill_id):
+    members_table = pypika.Table('bills')
+    a = pypika.Query.from_(members_table).select('*').where(members_table.bill_name == bill_id.upper())
+    print(a.get_sql())
+    data = execute_db.execute_database_command(conn,a.get_sql())
+    if data[1].rowcount == 0:
+        return None
+    else:
+        return data[1].fetchone()
 def add_bills_with_propublica(conn,bills):
     bills_table = pypika.Table('bills')
     for bill in bills:
@@ -560,19 +586,20 @@ def get_all_members_in_current_congress(conn,congress_num):
     a = pypika.Query.from_(members_table).select('*').where(members_table.congress_num == congress_num)
     data = execute_db.execute_database_command(conn,a.get_sql())
     if data[1].rowcount == 0:
-        return False
+        return []
     else:
         return data[1].fetchall()
 
 if __name__ == "__main__":
     # pass
-    # add_update_to_bills(set_up_connection())
+    # add_update_to_bills(set_up_connection())  
     # update_bills(set_up_connection(),50)
     # make_table_members()
     # members = propublica_data_worker.get_all_members_both_houses()
     # get_and_update_member_info(set_up_connection(),members[0]["id"])
     # create_sys_info_table(set_up_connection())
-    set_updated_bills_with_time(set_up_connection(),(datetime.datetime.now()-datetime.timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S.%f"))
+    rethink_bills(set_up_connection())
+    # set_updated_bills_with_time(set_up_connection(),(datetime.datetime.now()-datetime.timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S.%f"))
     # remove_bill_repeats(set_up_connection())
     # get_recent_info()
     # save_display_data()

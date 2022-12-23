@@ -18,7 +18,7 @@ import { Paper } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import './App.css';
 import { StyledEngineProvider } from '@mui/material/styles';
-
+import { TwitterTimelineEmbed, TwitterShareButton, TwitterFollowButton, TwitterHashtagButton, TwitterMentionButton, TwitterTweetEmbed, TwitterMomentShare, TwitterDMButton, TwitterVideoEmbed, TwitterOnAirButton } from 'react-twitter-embed';
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
   return <IconButton {...other} />;
@@ -35,6 +35,9 @@ export default function BillView(props) {
   const [expanded, setExpanded] = React.useState(false);
   // console.log(props)
   props = props['bill']
+  if (props === undefined) {
+    return (<div></div>)
+  }
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
@@ -117,7 +120,14 @@ export default function BillView(props) {
           <FavoriteIcon />
         </IconButton>
         <IconButton aria-label="share">
-          <ShareIcon />
+          {/* <ShareIcon />
+        </IconButton>
+        <IconButton aria-label='share-twitter'> */}
+        <TwitterShareButton
+        // url should be the url of the website
+    url={props['congress_now_url']}
+    options={{ text: 'About: ' + props['name'] + ' ' +(props['twitter_account'] != null ? "@"+props['twitter_account'] :"")  , via:'shoryamalani' ,size:'large' }}
+  />
         </IconButton>
         <ExpandMore
           expand={expanded}

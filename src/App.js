@@ -1,5 +1,5 @@
 import React, { useState, useEffect,Text } from 'react';
-import { BrowserRouter, Link, Switch, Route } from 'react-router-dom';
+import { BrowserRouter, Link, Switch, Route, useParams } from 'react-router-dom';
 import { StyledEngineProvider } from '@mui/material/styles';
 // import logo from './logo.svg';
 import './App.css';
@@ -17,6 +17,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import SaveIcon from '@mui/icons-material/Save';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
+import SingleBillView from './SingleBillView';
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
@@ -37,6 +38,7 @@ function App() {
       setBills({"results":data});
     });
   },{})
+
   
 
   return (
@@ -53,7 +55,14 @@ function App() {
             &nbsp;|&nbsp;
             <Link className="App-link" to="/bill_search">Bill Search</Link>
           </div> */}
+
           <Switch>
+            <Route path="/bill/:slug" >
+              <p>Bill View:</p>
+              <SingleBillView/>
+              {/* <BillView bill={getBill(useParams().slug)} /> */}
+              <ManyBillView currentBills={bills} />
+            </Route>
             <Route exact path="/">
                 {/* <img src={logo} className="App-logo" alt="logo" /> */}
                 <p >
@@ -105,3 +114,4 @@ function App() {
 
 
 export default App;
+

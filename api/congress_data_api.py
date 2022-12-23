@@ -152,6 +152,10 @@ def print_bills():
         if 'summaries' in bill[4]['bill']:
             print(bill[4]['bill']['summaries']['count'])
 
+def get_bill_data(bill_slug):
+    data = dbs_worker.get_bill(dbs_worker.set_up_connection(),bill_slug)
+    display_info = get_all_relevant_bill_info([data])
+    return display_info
 
 def get_all_relevant_bill_info(bills):
     final_bills = []
@@ -163,25 +167,35 @@ def get_all_relevant_bill_info(bills):
             member_data[member[0]] = {"pro":member[2],"con":member[3]}
         
     propublica_only = []
+    no_member = []
     for bill in bills:
-        if bill[5] != None:
-            final_bills.append(bill[5])
-        elif bill[0] == None:
-            # final_bills.append(get_all_relevant_bill_info_from_propublica(bill[1],member_data))
-            propublica_only.append(bill[1])
+        
+        # elif bill[0] == None:
+        #     # final_bills.append(get_all_relevant_bill_info_from_propublica(bill[1],member_data))
+        #     propublica_only.append(bill[1])
+        if bill[1] == None:
+            continue
         else:
             final_bill = {}
             bill_detailed = bill[4]['bill']
             bill_propublica = bill[1]
-            bill = bill[0]
-            final_bill['name'] = bill['title']
-            final_bill['url'] = 'https://www.congress.gov/bill/' + str(bill['congress']) + '/' + str(bill['type']) + '/' + str(bill['number'])
+            final_bill['name'] = bill_propublica['short_title']
+            # final_bill['url'] = 'https://www.congress.gov/bill/' + str(bill['congress']) + '/' + str(bill['type']) + '/' + str(bill['number'])
+            final_bill['url'] = bill_propublica['congressdotgov_url']
+            final_bill['congress_now_url'] = "http://localhost:3001" + "/bill/" + bill_propublica['bill_slug']
             final_bill['govtrack'] = bill_propublica['govtrack_url']
             final_bill['sponsor'] = bill_detailed['sponsors'][0]['firstName'] + ' ' + bill_detailed['sponsors'][0]['lastName'] + ' (' + bill_detailed['sponsors'][0]['party'] + '-' + bill_detailed['sponsors'][0]['state'] + ')'
-            final_bill['sponsorId'] = bill_detailed['sponsors'][0]['bioguideId']
+            final_bill['sponsorId'] = bill_detailed['sponsors'][0]['bioguideId'].upper()
             if final_bill['sponsorId'] in member_data:
                 final_bill['photo'] = member_data[final_bill['sponsorId']]['con']['depiction']['imageUrl']
                 final_bill['url'] = member_data[final_bill['sponsorId']]['pro']['url']
+                final_bill['twitter_account'] = member_data[final_bill['sponsorId']]['pro']['twitter_account']
+                final_bill['facebook_account'] = member_data[final_bill['sponsorId']]['pro']['facebook_account']
+            else:
+                final_bill['photo'] = None
+                final_bill['url'] = None
+                final_bill['twitter_account'] = None
+                final_bill['facebook_account'] = None
             final_bill['sponsorParty'] = bill_detailed['sponsors'][0]['party']
             final_bill['sponsorState'] = bill_detailed['sponsors'][0]['state']
             final_bill['summary'] = bill_propublica['summary']
@@ -215,30 +229,40 @@ def get_all_relevant_bill_info(bills):
                 final_bill['relatedBills'] = None
             final_bills.append(final_bill)
             dbs_worker.add_display_info_to_bill(dbs_worker.set_up_connection(),bill_propublica['bill_id'].replace("-","_").upper(),json.dumps(final_bill))
-    propublica_only = get_all_relevant_bill_info_from_propublica(propublica_only)
+            json.dump(no_member,open("no_member.json","w+"))
+    propublica_only = get_all_relevant_bill_info_from_propublica(propublica_only,member_data)
     for bill in propublica_only:
         final_bills.append(bill)
     return final_bills
-def get_all_relevant_bill_info_from_propublica(bills):
+def get_all_relevant_bill_info_from_propublica(bills,member_data=None):
     final_bills = []
-    members = dbs_worker.get_all_members(dbs_worker.set_up_connection())
-    member_data = {}
+    if member_data == None:
+        members = dbs_worker.get_all_members(dbs_worker.set_up_connection())
+        member_data = {}
 
-    for member in members:
-        if member[2] != None and member[3] != None:
-            member_data[member[0]] = {"pro":member[2],"con":member[3]}
+        for member in members:
+            if member[2] != None and member[3] != None:
+                member_data[member[0]] = {"pro":member[2],"con":member[3]}
         
 
     for bill in bills:
         final_bill = {}
         bill_propublica = bill
+        print(bill)
         if bill_propublica == None:
             continue
         # final_bill['name'] = bill_propublica['bill_id'].replace("-"," ").upper()
         final_bill['name'] = bill_propublica['short_title']
         final_bill['url'] = bill_propublica['congressdotgov_url']
-        final_bill['govtrack'] = bill_propublica['govtrack_url']
-        final_bill['sponsor'] = bill_propublica['sponsor_title'] + ' ' + bill_propublica['sponsor'] + ' (' + bill_propublica['sponsor_party'] + '-' + bill_propublica['sponsor_state'] + ')'
+        final_bill['congress_now_url'] = "http://localhost:3001" + "/bill/" + bill_propublica['bill_slug']
+        if 'govtrack_url' in bill_propublica:
+            final_bill['govtrack'] = bill_propublica['govtrack_url']
+        else:
+            final_bill['govtrack'] = "https://www.govtrack.us/congress/bills/" + str(bill_propublica['congress']) + "/" + bill_propublica['bill_id'].replace("-","").upper()
+        if 'sponsor_name' in bill_propublica:
+            final_bill['sponsor'] = bill_propublica['sponsor_title'] + ' ' + bill_propublica['sponsor_name'] + ' (' + bill_propublica['sponsor_party'] + '-' + bill_propublica['sponsor_state'] + ')'
+        else:
+            final_bill['sponsor'] = bill_propublica['sponsor_title'] + ' ' + bill_propublica['sponsor'] + ' (' + bill_propublica['sponsor_party'] + '-' + bill_propublica['sponsor_state'] + ')'
         final_bill['sponsorId'] = bill_propublica['sponsor_id']
         if final_bill['sponsorId'] in member_data:
             final_bill['photo'] = member_data[final_bill['sponsorId']]['con']['depiction']['imageUrl']

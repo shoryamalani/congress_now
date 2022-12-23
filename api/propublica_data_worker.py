@@ -25,6 +25,7 @@ def send_request(url,headers,params={}):
     if r.status_code == 200:
         return r.json()
     else:
+        print(r.status_code)
         return None
 
 def get_current_senate_members():
@@ -119,6 +120,8 @@ def search_bills_text(text):
     url = f'https://api.propublica.org/congress/v1/bills/search.json?query={text}'
     headers = {'X-API-Key': api_key}
     data = send_request(url,headers)
+    if data == None:
+        return None
     if 'results' in data:
         return data['results'][0]['bills']
     return None
