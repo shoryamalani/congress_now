@@ -593,8 +593,8 @@ def get_all_members_in_current_congress(conn,congress_num):
 if __name__ == "__main__":
     # pass
     create_sys_info_table(set_up_connection())
-    make_table_bills(set_up_connection())
-    make_table_members(set_up_connection())
+    make_table_bills()
+    make_table_members()
     # add_update_to_bills(set_up_connection())  
     # update_bills(set_up_connection(),50)
     # make_table_members()
