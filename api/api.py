@@ -17,6 +17,9 @@ def not_found(e):
 def index():
     return app.send_static_file('index.html')
 
+@app.route('/api/time')
+def get_time():
+    return {'time': time.time()}
 
 @app.route('/bill/<bill_slug>')
 def bill_page(bill_slug):
