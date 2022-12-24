@@ -8,7 +8,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 COPY api/requirements.txt ./
 RUN pip install -r ./requirements.txt
-COPY  api/api.py api/.flaskenv api/dbs_worker.py api/congress_data_api.py api/propublica_data_worker.py api/.env api/update_data_hourly.py api/startup.sh ./ 
+COPY  api/api.py api/.flaskenv api/dbs_worker.py api/congress_data_api.py api/propublica_data_worker.py api/.env api/update_data_hourly.py api/startup.sh api/update_data_now.py ./ 
 COPY postgres/.env ./postgres/.env
 COPY api/dbs_scripts ./dbs_scripts
 
