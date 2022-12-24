@@ -8,6 +8,8 @@ services:
       - postgres_real
     ports:
       - "5000:5000"
+    links:
+      - postgres_real:postgres_real
     networks:
       - backnetwork
   client:
@@ -18,6 +20,8 @@ services:
       - api
     ports:
       - "3000:80"
+    links:
+      - api:api
     networks:
       - backnetwork
   postgres_real:
