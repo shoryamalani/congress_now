@@ -42,7 +42,6 @@ def update_bills(log_file):
     dbs_worker.rethink_bills(dbs_worker.set_up_connection())
         # dbs_worker.get_recent_info(dbs_worker.set_up_connection())
     congress_data_api.get_current_data() # gets new bill information
-    print("Updated bills and members")
 
 if __name__ == "__main__":
     # for i in range(24):
