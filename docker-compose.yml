@@ -11,7 +11,7 @@ services:
     links:
       - postgres_real:postgres_real
     networks:
-      - backnetwork
+      - backend
   client:
     build:
       context: .
@@ -23,7 +23,7 @@ services:
     links:
       - backend:backend
     networks:
-      - backnetwork
+      - backend
   postgres_real:
     container_name: postgres_real
     image: postgres:latest
@@ -36,7 +36,7 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - backnetwork
+      - backend
 networks:
-  backnetwork:
+  backend:
     driver: bridge
