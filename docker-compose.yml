@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.api
-    image: react-flask-app-api
+    # image: react-flask-app-api
     depends_on:
       - postgres_real
     ports:
@@ -14,11 +14,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.client
-    image: react-flask-app-client
-    deploy:
-      resources:
-        limits:
-          memory: 2g
     depends_on:
       - api
     ports:
