@@ -9,7 +9,7 @@ services:
     ports:
       - "5000:5000"
     networks:
-      - backnet
+      - backnetwork
   client:
     build:
       context: .
@@ -19,7 +19,7 @@ services:
     ports:
       - "3000:80"
     networks:
-      - backnet
+      - backnetwork
   postgres_real:
     container_name: postgres_real
     image: postgres:latest
@@ -32,7 +32,7 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - backnet
+      - backnetwork
 networks:
-  backnet:
+  backnetwork:
     driver: bridge
