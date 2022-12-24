@@ -17,6 +17,10 @@ services:
       context: .
       dockerfile: Dockerfile.client
     image: react-flask-app-client
+    deploy:
+      resources:
+        limits:
+          memory: 2g
     depends_on:
       - api
     ports:
