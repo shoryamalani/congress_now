@@ -112,13 +112,16 @@ export default function BillView(props) {
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
+        {/* <IconButton aria-label="add to favorites">
           <FavoriteIcon />
-        </IconButton>
+        </IconButton> */}
         <IconButton aria-label="share">
-          {/* <ShareIcon />
+          <ShareIcon onClick={()=>{
+            // copy to clipboard
+            navigator.clipboard.writeText(props['congress_now_url'])
+          }} />
         </IconButton>
-        <IconButton aria-label='share-twitter'> */}
+        <IconButton aria-label='share-twitter'>
         <TwitterShareButton
         // url should be the url of the website
     url={props['congress_now_url']}
