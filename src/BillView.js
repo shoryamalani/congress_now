@@ -90,7 +90,7 @@ export default function BillView(props) {
         
         
         <Typography variant="body2" color="text.primary">
-          update on {props['lastActionDate']}: {props['lastAction']}
+          Updated on {props['lastActionDate']}: {props['lastAction']}
         </Typography>
         <Typography variant="body2" color="text.primary">
           Number of cosponsors: {props['cosponsors']}
