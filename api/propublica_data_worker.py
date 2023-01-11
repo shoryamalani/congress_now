@@ -12,7 +12,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed, wait
 load_dotenv()
 #get key from environment variables
 api_key = os.environ.get('PROPUBLICA_API_KEY')
-CURRENT_CONGRESS = '117'
+CURRENT_CONGRESS = '118'
 #https://projects.propublica.org/api-docs/congress-api/members/#get-current-members
 
 FULL_DAY = 86400
