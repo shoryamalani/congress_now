@@ -536,6 +536,7 @@ def get_all_bills_to_update(conn):
 def update_bills(conn,num):
     if get_all_bills_to_update(conn) == False:
         return
+
     bills = get_all_bills_to_update(conn)[:num]
     bills_table = pypika.Table('bills')
     bill_display_data = []
