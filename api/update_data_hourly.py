@@ -40,7 +40,8 @@ def update_bills(log_file):
             to_update.append(member)
     conn = dbs_worker.set_up_connection()
     for i in to_update[:25]:
-        dbs_worker.get_and_update_member_info(conn,i['id'],propublica_data=i)
+        print(i)
+        dbs_worker.get_and_update_member_info(conn,i[0],propublica_data=i)
     dbs_worker.rethink_bills(dbs_worker.set_up_connection())
         # dbs_worker.get_recent_info(dbs_worker.set_up_connection())
     congress_data_api.get_current_data() # gets new bill information
