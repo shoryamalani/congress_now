@@ -35,7 +35,7 @@ def update_bills(log_file):
     while len(to_update) < 25:
         member = members_current[i]
         i+=1
-        print(member)
+        print(member[4])
         if  datetime.datetime.now() - datetime.datetime.strptime(member["last_updated"].split()[0],"%Y-%m-%d")  >  datetime.timedelta(hours=24): 
             to_update.append(member)
     conn = dbs_worker.set_up_connection()
