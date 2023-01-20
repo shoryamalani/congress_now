@@ -22,7 +22,7 @@ def update_bills(log_file):
         congress_data_api.save_bills(bills)
         dbs_worker.set_updated_bills(dbs_worker.set_up_connection())
     dbs_worker.update_bills(dbs_worker.set_up_connection(),25)
-    if not dbs_worker.check_if_members_updated_in_last_24_hours(dbs_worker.set_up_connection()):
+    # if not dbs_worker.check_if_members_updated_in_last_24_hours(dbs_worker.set_up_connection()):
     to_update = []
     members = propublica_data_worker.get_all_members_both_houses()
     print(members[0])
