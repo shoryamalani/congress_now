@@ -7,6 +7,7 @@ import schedule
 import time
 import loguru
 from sys import argv
+import requests
 
 
 def set_up_hourly_data_server():
@@ -44,7 +45,8 @@ def update_bills(log_file):
         dbs_worker.get_and_update_member_info(conn,i['id'] if 'id' in i else i['request']['bioguideId'].upper(),propublica_data=i)
     dbs_worker.rethink_bills(dbs_worker.set_up_connection())
         # dbs_worker.get_recent_info(dbs_worker.set_up_connection())
-    congress_data_api.get_current_data() # gets new bill information
+    # congress_data_api.get_current_data() # gets new bill information
+    requests.get('https://congressnow.shoryamalani.com/api/force_get_data')    
 
 if __name__ == "__main__":
     # for i in range(24):
