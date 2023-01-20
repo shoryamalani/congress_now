@@ -28,13 +28,13 @@ def update_bills(log_file):
     members_current = dbs_worker.get_all_members_in_current_congress(dbs_worker.set_up_connection(),congress_data_api.get_current_congress())
     members_current_ids = [i[0] for i in members_current]
     for member in members:
-        if member['id'] not in members_current_ids:
+        if member[0] not in members_current_ids:
             to_update.append(member)
     i = 0
     while len(to_update) < 25:
         member = members_current[i]
         i+=1
-        if  datetime.datetime.now() - datetime.datetime.strptime(member["last_updated"],"%Y-%m-%d")  >  datetime.timedelta(hours=24):
+        if  datetime.datetime.now() - datetime.datetime.strptime(member[4].split()[0],"%Y-%m-%d")  >  datetime.timedelta(hours=24): 
             to_update.append(member)
     conn = dbs_worker.set_up_connection()
     for i in to_update[:25]:
