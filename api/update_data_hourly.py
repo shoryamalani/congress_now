@@ -16,13 +16,13 @@ def set_up_hourly_data_server():
 def update_bills(log_file):
     loguru.logger.add(log_file, rotation="1 day", retention="7 days")
     loguru.logger.debug("Updated bills and members")
-    # conn = dbs_worker.set_up_connection()
-    # if not dbs_worker.check_if_bills_updated_in_last_12_hours(dbs_worker.set_up_connection()):
-    #     bills = congress_data_api.get_current_bills_after(dbs_worker.get_last_bills_updated(conn))
-    #     congress_data_api.save_bills(bills)
-    #     dbs_worker.set_updated_bills(dbs_worker.set_up_connection())
-    # dbs_worker.update_bills(dbs_worker.set_up_connection(),25)
-    # if not dbs_worker.check_if_members_updated_in_last_24_hours(dbs_worker.set_up_connection()):
+    conn = dbs_worker.set_up_connection()
+    if not dbs_worker.check_if_bills_updated_in_last_12_hours(dbs_worker.set_up_connection()):
+        bills = congress_data_api.get_current_bills_after(dbs_worker.get_last_bills_updated(conn))
+        congress_data_api.save_bills(bills)
+        dbs_worker.set_updated_bills(dbs_worker.set_up_connection())
+    dbs_worker.update_bills(dbs_worker.set_up_connection(),25)
+    if not dbs_worker.check_if_members_updated_in_last_24_hours(dbs_worker.set_up_connection()):
     to_update = []
     members = propublica_data_worker.get_all_members_both_houses()
     print(members[0])
@@ -41,7 +41,7 @@ def update_bills(log_file):
     conn = dbs_worker.set_up_connection()
     for i in to_update[:25]:
         print(i)
-        dbs_worker.get_and_update_member_info(conn,i['id'] if 'id' in i else i['request']['bioguideId'],propublica_data=i)
+        dbs_worker.get_and_update_member_info(conn,i['id'] if 'id' in i else i['request']['bioguideId'].upper(),propublica_data=i)
     dbs_worker.rethink_bills(dbs_worker.set_up_connection())
         # dbs_worker.get_recent_info(dbs_worker.set_up_connection())
     congress_data_api.get_current_data() # gets new bill information
