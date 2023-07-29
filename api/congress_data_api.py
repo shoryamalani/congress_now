@@ -187,7 +187,10 @@ def get_all_relevant_bill_info(bills):
             final_bill['sponsor'] = bill_detailed['sponsors'][0]['firstName'] + ' ' + bill_detailed['sponsors'][0]['lastName'] + ' (' + bill_detailed['sponsors'][0]['party'] + '-' + bill_detailed['sponsors'][0]['state'] + ')'
             final_bill['sponsorId'] = bill_detailed['sponsors'][0]['bioguideId'].upper()
             if final_bill['sponsorId'] in member_data:
-                final_bill['photo'] = member_data[final_bill['sponsorId']]['con']['depiction']['imageUrl']
+                if "depiction" not in member_data[final_bill['sponsorId']]['con']:
+                    final_bill['photo'] = ""
+                else:
+                    final_bill['photo'] = member_data[final_bill['sponsorId']]['con']['depiction']['imageUrl']
                 final_bill['url'] = member_data[final_bill['sponsorId']]['pro']['url']
                 final_bill['twitter_account'] = member_data[final_bill['sponsorId']]['pro']['twitter_account']
                 final_bill['facebook_account'] = member_data[final_bill['sponsorId']]['pro']['facebook_account']
