@@ -101,10 +101,10 @@ def get_all_recent_bills(conn,tot):
     bills = get_all_bills_that_have_been_updated(conn)[:tot]
     final_bills = {}
     for bill in bills:
-        if bill[1]['latest_major_action_date'] in final_bills:
-            final_bills[bill[1]['latest_major_action_date']].append(bill)
+        if bill[5]['lastActionDate'] in final_bills:
+            final_bills[bill[5]['lastActionDate']].append(bill)
         else:
-            final_bills[bill[1]['latest_major_action_date']] = [bill]
+            final_bills[bill[5]['lastActionDate']] = [bill]
     #get most recent 100 bills
     final_bills_list = []
     total = 0
