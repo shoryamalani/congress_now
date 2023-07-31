@@ -46,6 +46,8 @@ def update_bills(log_file):
                 # print(member[4])
                 if  datetime.datetime.now() - member[4]  >  datetime.timedelta(hours=24): 
                     to_update.append(member[2])
+            else:
+                i+=1
     except Exception as e:
         print("ERROR GETTING MEMBERS")
         print(e)
