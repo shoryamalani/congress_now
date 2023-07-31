@@ -17,6 +17,7 @@ def is_docker():
     )
 def set_up_connection():
     # Path to .env file
+
     if not is_docker():
         dotenv_path = os.path.join(os.path.dirname(__file__), '../postgres/.env')
         # Load file from the path

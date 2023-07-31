@@ -60,7 +60,7 @@ if __name__ == "__main__":
         try:
             schedule.run_pending()
         except:
-            pass
+            print("Error updating bills")
         time.sleep(1)
 
 
