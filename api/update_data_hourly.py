@@ -40,11 +40,12 @@ def update_bills(log_file):
                 to_update.append(member)
         i = 0
         while len(to_update) < 25:
-            member = members_current[i]
-            i+=1
-            # print(member[4])
-            if  datetime.datetime.now() - member[4]  >  datetime.timedelta(hours=24): 
-                to_update.append(member[2])
+            if i >= len(members_current):
+                member = members_current[i]
+                i+=1
+                # print(member[4])
+                if  datetime.datetime.now() - member[4]  >  datetime.timedelta(hours=24): 
+                    to_update.append(member[2])
     except Exception as e:
         print("ERROR GETTING MEMBERS")
         print(e)
