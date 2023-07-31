@@ -539,7 +539,7 @@ def update_bills(conn,num):
         return
     all_bills = get_all_bills_to_update(conn)
     final_bills = {}
-    for bill in bills:
+    for bill in all_bills:
         if bill[0]['latestAction']['actionDate'] in final_bills:
             final_bills[bill[0]['latestAction']['actionDate']].append(bill)
         else:
