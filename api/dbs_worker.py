@@ -547,7 +547,7 @@ def update_bills(conn,num):
 
 
     bills = []
-    sorted_keys = sorted(final_bills.keys())
+    sorted_keys = sorted(final_bills.keys(),reverse=True)
     for key in sorted_keys:
         if len(bills) >= num:
             break
