@@ -45,11 +45,15 @@ def update_bills(log_file):
         if  datetime.datetime.now() - member[4]  >  datetime.timedelta(hours=24): 
             to_update.append(member[2])
     conn = dbs_worker.set_up_connection()
-
-    for i in to_update[:25]:
-        print(i)
-        dbs_worker.get_and_update_member_info(conn,i['id'] if 'id' in i else i['request']['bioguideId'].upper(),propublica_data=i)
-    dbs_worker.rethink_bills(dbs_worker.set_up_connection())
+    try:
+        for i in to_update[:25]:
+            print(i)
+            dbs_worker.get_and_update_member_info(conn,i['id'] if 'id' in i else i['request']['bioguideId'].upper(),propublica_data=i)
+        dbs_worker.rethink_bills(dbs_worker.set_up_connection())
+    except Exception as e:
+        print("ERROR UPDATING MEMBERS")
+        print("ERROR Rethinking bills")
+        print(e)
         # dbs_worker.get_recent_info(dbs_worker.set_up_connection())
     # congress_data_api.get_current_data() # gets new bill information
     requests.get('https://congressnow.shoryamalani.com/api/force_get_data')    
