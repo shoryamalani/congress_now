@@ -536,8 +536,25 @@ def get_all_bills_to_update(conn):
 def update_bills(conn,num):
     if get_all_bills_to_update(conn) == False:
         return
+    all_bills = get_all_bills_to_update(conn)
+    final_bills = {}
+    for bill in bills:
+        if bill[0]['latestAction']['actionDate'] in final_bills:
+            final_bills[bill[0]['latestAction']['actionDate']].append(bill)
+        else:
+            final_bills[bill[0]['latestAction']['actionDate']] = [bill] 
 
-    bills = get_all_bills_to_update(conn)[:num]
+
+    bills = []
+    sorted_keys = sorted(final_bills.keys())
+    for key in sorted_keys:
+        if len(bills) >= num:
+            break
+        for bill in final_bills[key]:
+            if len(bills) >= num:
+                break
+            bills.append(bill)
+
     bills_table = pypika.Table('bills')
     bill_display_data = []
     for bill in bills:
