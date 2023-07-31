@@ -53,7 +53,10 @@ if __name__ == "__main__":
         # update_bills()
     schedule.every().hour.do(update_bills,argv[1])
     while 1:
-        schedule.run_pending()
+        try:
+            schedule.run_pending()
+        except:
+            pass
         time.sleep(1)
 
 
