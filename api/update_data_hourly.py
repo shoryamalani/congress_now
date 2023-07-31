@@ -54,8 +54,8 @@ if __name__ == "__main__":
         # update_bills()
     try:
         update_bills(argv[1])
-    except:
-        pass
+    except Exception as e:
+        print(e)
     schedule.every().hour.do(update_bills,argv[1])
     while 1:
         try:
