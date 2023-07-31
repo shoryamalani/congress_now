@@ -65,6 +65,10 @@ def get_detailed_bill_info(bill_info):
             url = bill['bill']['relatedBills']['url']
             headers = {'X-API-Key': API_KEY}
             bill['bill']['relatedBills']['data'] = send_request(url,headers,{})
+        if 'text' in bill['bill']:
+            url = bill['bill']['text']
+            headers = {'X-API-Key': API_KEY}
+            bill['bill']['text'] = send_request(url,headers,{})
         return bill
     except Exception as e:
         print(e)
