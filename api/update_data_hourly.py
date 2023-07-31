@@ -53,7 +53,7 @@ def update_bills(log_file):
             else:
                 i+=1
     except Exception as e:
-        print("ERROR GETTING MEMBERS")
+        print("ERROR GETTING MEMBERS second")
         print(e)
     conn = dbs_worker.set_up_connection()
     try:
