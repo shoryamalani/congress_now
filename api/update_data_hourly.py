@@ -51,6 +51,10 @@ def update_bills(log_file):
 if __name__ == "__main__":
     # for i in range(24):
         # update_bills()
+    try:
+        update_bills(argv[1])
+    except:
+        pass
     schedule.every().hour.do(update_bills,argv[1])
     while 1:
         try:
