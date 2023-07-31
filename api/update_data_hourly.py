@@ -27,7 +27,7 @@ def update_bills(log_file):
     # if not dbs_worker.check_if_members_updated_in_last_24_hours(dbs_worker.set_up_connection()):
     to_update = []
     members = propublica_data_worker.get_all_members_both_houses()
-    print(members[0])
+    # print(members[0])
     members_current = dbs_worker.get_all_members_in_current_congress(dbs_worker.set_up_connection(),congress_data_api.get_current_congress())
     members_current_ids = [i[0] for i in members_current]
     for member in members:
@@ -41,6 +41,7 @@ def update_bills(log_file):
         if  datetime.datetime.now() - member[4]  >  datetime.timedelta(hours=24): 
             to_update.append(member[2])
     conn = dbs_worker.set_up_connection()
+
     for i in to_update[:25]:
         print(i)
         dbs_worker.get_and_update_member_info(conn,i['id'] if 'id' in i else i['request']['bioguideId'].upper(),propublica_data=i)
