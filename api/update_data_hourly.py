@@ -35,6 +35,10 @@ def update_bills(log_file):
         # print(members[0])
         members_current = dbs_worker.get_all_members_in_current_congress(dbs_worker.set_up_connection(),congress_data_api.get_current_congress())
         members_current_ids = [i[0] for i in members_current]
+    except Exception as e:
+        print("ERROR GETTING MEMBERS FIRST")
+        print(e)
+    try:
         for member in members:
             if member["id"] not in members_current_ids:
                 to_update.append(member)
