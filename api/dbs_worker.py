@@ -98,7 +98,7 @@ def get_all_bills_that_have_been_updated(conn):
 
 def get_all_recent_bills(conn,tot):
     # bills = get_all_bills(conn)
-    bills = get_all_bills_that_have_been_updated(conn)[:tot]
+    bills = get_all_bills_that_have_been_updated(conn)
     final_bills = {}
     for bill in bills:
         if bill[5]['lastActionDate'] in final_bills:
