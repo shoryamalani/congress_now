@@ -19,11 +19,15 @@ def update_bills(log_file):
     loguru.logger.debug("Updated bills and members")
     conn = dbs_worker.set_up_connection()
     print("Updating bills")
-    if not dbs_worker.check_if_bills_updated_in_last_12_hours(dbs_worker.set_up_connection()):
-        bills = congress_data_api.get_current_bills_after(dbs_worker.get_last_bills_updated(conn))
-        congress_data_api.save_bills(bills)
-        dbs_worker.set_updated_bills(dbs_worker.set_up_connection())
-    dbs_worker.update_bills(dbs_worker.set_up_connection(),25)
+    try:
+        if not dbs_worker.check_if_bills_updated_in_last_12_hours(dbs_worker.set_up_connection()):
+            bills = congress_data_api.get_current_bills_after(dbs_worker.get_last_bills_updated(conn))
+            congress_data_api.save_bills(bills)
+            dbs_worker.set_updated_bills(dbs_worker.set_up_connection())
+        dbs_worker.update_bills(dbs_worker.set_up_connection(),25)
+    except Exception as e:
+        print("ERROR UPDATING BILLS")
+        print(e)
     # if not dbs_worker.check_if_members_updated_in_last_24_hours(dbs_worker.set_up_connection()):
     to_update = []
     members = propublica_data_worker.get_all_members_both_houses()
