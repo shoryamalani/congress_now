@@ -29,21 +29,25 @@ def update_bills(log_file):
         print("ERROR UPDATING BILLS")
         print(e)
     # if not dbs_worker.check_if_members_updated_in_last_24_hours(dbs_worker.set_up_connection()):
-    to_update = []
-    members = propublica_data_worker.get_all_members_both_houses()
-    # print(members[0])
-    members_current = dbs_worker.get_all_members_in_current_congress(dbs_worker.set_up_connection(),congress_data_api.get_current_congress())
-    members_current_ids = [i[0] for i in members_current]
-    for member in members:
-        if member["id"] not in members_current_ids:
-            to_update.append(member)
-    i = 0
-    while len(to_update) < 25:
-        member = members_current[i]
-        i+=1
-        # print(member[4])
-        if  datetime.datetime.now() - member[4]  >  datetime.timedelta(hours=24): 
-            to_update.append(member[2])
+    try:
+        to_update = []
+        members = propublica_data_worker.get_all_members_both_houses()
+        # print(members[0])
+        members_current = dbs_worker.get_all_members_in_current_congress(dbs_worker.set_up_connection(),congress_data_api.get_current_congress())
+        members_current_ids = [i[0] for i in members_current]
+        for member in members:
+            if member["id"] not in members_current_ids:
+                to_update.append(member)
+        i = 0
+        while len(to_update) < 25:
+            member = members_current[i]
+            i+=1
+            # print(member[4])
+            if  datetime.datetime.now() - member[4]  >  datetime.timedelta(hours=24): 
+                to_update.append(member[2])
+    except Exception as e:
+        print("ERROR GETTING MEMBERS")
+        print(e)
     conn = dbs_worker.set_up_connection()
     try:
         for i in to_update[:25]:
