@@ -331,6 +331,7 @@ def get_current_data():
     data = dbs_worker.get_all_recent_bills(conn,50)
     # data = congress_data_api.get_all_relevant_bill_info(dbs_worker.get_all_bills(dbs_worker.set_up_connection()))
     with open('current_all_bills.json','w') as f:
+        print(data)
         f.write(json.dumps(data))
     return data
 
