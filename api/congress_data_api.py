@@ -306,7 +306,10 @@ def get_all_relevant_bill_info_from_propublica(bills,member_data=None):
             final_bill['sponsor'] = bill_propublica['sponsor_title'] + ' ' + bill_propublica['sponsor'] + ' (' + bill_propublica['sponsor_party'] + '-' + bill_propublica['sponsor_state'] + ')'
         final_bill['sponsorId'] = bill_propublica['sponsor_id']
         if final_bill['sponsorId'] in member_data:
-            final_bill['photo'] = member_data[final_bill['sponsorId']]['con']['depiction']['imageUrl']
+            if "depiction" not in member_data[final_bill['sponsorId']]['con']:
+                final_bill['photo'] = ""
+            else:
+                final_bill['photo'] = member_data[final_bill['sponsorId']]['con']['depiction']['imageUrl']
             final_bill['url'] = member_data[final_bill['sponsorId']]['pro']['url']
         final_bill['sponsorParty'] = bill_propublica['sponsor_party']
         final_bill['sponsorState'] = bill_propublica['sponsor_state']
