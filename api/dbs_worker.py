@@ -551,6 +551,8 @@ def update_bills(conn,num):
     final_bills = {}
     for bill in all_bills:
         print(bill)
+        if bill[0] == None:
+            continue
         if bill[0]['latestAction']['actionDate'] in final_bills:
             final_bills[bill[0]['latestAction']['actionDate']].append(bill)
         else:
