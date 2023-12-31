@@ -13,21 +13,33 @@ import requests
 def set_up_hourly_data_server():
     conn = dbs_worker.set_up_connection()
     dbs_worker.create_sys_info_table(conn)
-    
+
+def download_text(num):
+    # get bills that don't have text
+    bills = dbs_worker.get_bills_without_text(dbs_worker.set_up_connection(),num)
+    # order by date
+    bills = sorted(bills,key=lambda x: x[0]['latestAction']['actionDate'],reverse=True)
+    # only get the first num
+    bills = bills[:num]
+    # download text
+    for bill in bills:
+        congress_data_api.get_and_save_bill_text(bill[0]['congress'],bill[0]['bill_type'],bill[0]['number'])
+
+
 def update_bills(log_file):
     loguru.logger.add(log_file, rotation="1 day", retention="7 days")
     loguru.logger.debug("Updated bills and members")
     conn = dbs_worker.set_up_connection()
     print("Updating bills")
-    try:
-        if not dbs_worker.check_if_bills_updated_in_last_12_hours(dbs_worker.set_up_connection()):
-            bills = congress_data_api.get_current_bills_after(dbs_worker.get_last_bills_updated(conn))
-            congress_data_api.save_bills(bills)
-            dbs_worker.set_updated_bills(dbs_worker.set_up_connection())
-        dbs_worker.update_bills(dbs_worker.set_up_connection(),25)
-    except Exception as e:
-        print("ERROR UPDATING BILLS")
-        print(e)
+    # try:
+    if not dbs_worker.check_if_bills_updated_in_last_12_hours(dbs_worker.set_up_connection()):
+        bills = congress_data_api.get_current_bills_after(dbs_worker.get_last_bills_updated(conn))
+        congress_data_api.save_bills(bills)
+        dbs_worker.set_updated_bills(dbs_worker.set_up_connection())
+    dbs_worker.update_bills(dbs_worker.set_up_connection(),25)
+    # except Exception as e:
+    #     print("ERROR UPDATING BILLS")
+    #     print(e)
     # if not dbs_worker.check_if_members_updated_in_last_24_hours(dbs_worker.set_up_connection()):
     try:
         to_update = []
@@ -67,6 +79,11 @@ def update_bills(log_file):
         print(e)
         # dbs_worker.get_recent_info(dbs_worker.set_up_connection())
     # congress_data_api.get_current_data() # gets new bill information
+    try:
+        download_text(100)
+    except Exception as e:
+        print("ERROR DOWNLOADING TEXT")
+        print(e)
     requests.get('https://congressnow.shoryamalani.com/api/force_get_data')    
 
 if __name__ == "__main__":

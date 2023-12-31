@@ -135,7 +135,7 @@ def get_all_bills(conn):
         return data[1].fetchall()
 def update_bill(conn,bill_name,data):
     bills_table = pypika.Table('bills')
-    a = pypika.Query.update(bills_table).set(bills_table.congress_api,data['congress_api']).set(bills_table.congress_api_detailed,data['congress_api_detailed']).where(bills_table.bill_name == bill_name.upper())
+    a = pypika.Query.update(bills_table).set(bills_table.congress_api,data['congress_api']).set(bills_table.congress_api_detailed,data['congress_api_detailed']).set(bills_table.bill_text,data['congress_api_detailed']['bill']['text']).where(bills_table.bill_name == bill_name.upper())
     # pypika.Query.update('bills')._update_sql
     # congress_write = write_and_read_to_database.make_update_db('bills','congress_api',data['congress_api'],'bill_name',bill_name)
     # congress_write = write_and_read_to_database.make_write_to_db('bills',(bill_name,congress_data),('bill_name','congress_api'))
@@ -157,6 +157,7 @@ CREATE TABLE public.bills (
 	bill_name text NULL,
 	congress_api_detailed json NULL,
     display_data json NULL,
+    bill_text text NULL,
     to_update boolean NULL
 );
 
@@ -175,6 +176,13 @@ def add_update_to_bills(conn):
     [conn,cur] = execute_db.execute_database_command(conn,a.get_sql())
     conn.commit()
     rethink_bills(conn)
+
+def get_bills_without_text(conn,num):
+    bills = pypika.Table('bills')
+    a = pypika.Query.from_(bills).select('*').where(bills.bill_text == None).limit(num)
+    [conn,cur] = execute_db.execute_database_command(conn,a.get_sql())
+    data = cur.fetchall()
+    return data
     
 def rethink_bills(conn):
     bills = pypika.Table('bills')
@@ -611,11 +619,28 @@ def get_all_members_in_current_congress(conn,congress_num):
     else:
         return data[1].fetchall()
 
+def add_columns_to_bills():
+    # Add the bill_text column, add ai_summary column, and add ai_summary_updated column
+    bills_table = pypika.Table('bills')
+    a = pypika.Query.alter_table(bills_table).add_column('bill_text','text').add_column('ai_summary','text').add_column('ai_summary_updated','boolean')
+    
+    [conn,cur] = execute_db.execute_database_command(conn,a.get_sql())
+
+    conn.commit()
+
+def add_bill_text(uuid,text):
+    bills_table = pypika.Table('bills')
+    a = pypika.Query.update(bills_table).set(bills_table.bill_text,text).where(bills_table.uuid == uuid)
+    [conn,cur] = execute_db.execute_database_command(conn,a.get_sql())
+    conn.commit()
+    
+
 if __name__ == "__main__":
     # pass
-    create_sys_info_table(set_up_connection())
-    make_table_bills()
-    make_table_members()
+    # create_sys_info_table(set_up_connection())
+    add_columns_to_bills()
+    # make_table_bills()
+    # make_table_members()
     # add_update_to_bills(set_up_connection())  
     # update_bills(set_up_connection(),50)
     # make_table_members()

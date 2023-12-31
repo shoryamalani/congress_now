@@ -6,6 +6,7 @@ import dbs_worker
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed, wait
 from ratelimit import limits, sleep_and_retry
+import re
 load_dotenv()
 BASE_API_URL = 'https://api.congress.gov/v3'
 API_KEY = os.environ.get('CONGRESS_API_KEY')
@@ -65,10 +66,6 @@ def get_detailed_bill_info(bill_info):
             url = bill['bill']['relatedBills']['url']
             headers = {'X-API-Key': API_KEY}
             bill['bill']['relatedBills']['data'] = send_request(url,headers,{})
-        if 'text' in bill['bill']:
-            url = bill['bill']['text']
-            headers = {'X-API-Key': API_KEY}
-            bill['bill']['text'] = send_request(url,headers,{})
         return bill
     except Exception as e:
         print(e)
@@ -147,6 +144,43 @@ def get_member_detailed_cosponsored(member):
     bills = send_request(url,headers,params)
     return bills
 
+def get_and_save_bill_text(congress,billType,billNumber,uuid):
+    url = BASE_API_URL + "/bill/" + str(congress) + "/" + billType + "/" + str(billNumber) + "/text"
+    headers = {'X-API-Key': API_KEY}
+    params = {"format":'json','limit':'250'}
+    text = send_request(url,headers,params)
+    # download
+    if text != None:
+        newestVersion = None
+        curDate = datetime.datetime.strptime("1100-01-01","%Y-%m-%d")
+        for version in text['textVersions']:
+            if version['date'] == None or version['date'] == None:
+                newestVersion = version
+            if version['date'] > curDate:
+                newestVersion = version
+                curDate = version['date']
+        if newestVersion != None:
+            url = ""
+            for format in newestVersion['formats']:
+                if format['type'] == "Formatted XML":
+                    url = format['url']
+            if url != "":
+                # download from this url and extract the text from this htm site
+                root = requests.get(url).text
+                # Extract title
+                title_element = root.find('.//dc:title')
+                title = title_element.text.strip() if title_element is not None else ''
+
+                # Extract official title
+                official_title_element = root.find('.//official-title')
+                official_title = official_title_element.text.strip() if official_title_element is not None else ''
+
+                # Extract the text of the bill
+                bill_text_elements = root.findall('.//legis-body//text')
+                bill_text = "\n".join(text_element.text.strip() for text_element in bill_text_elements)
+                final_text = title + "\n" + official_title + "\n" + bill_text
+                dbs_worker.add_bill_text(dbs_worker.set_up_connection(),uuid,final_text)
+    return text
 
 
 def print_bills():
