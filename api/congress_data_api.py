@@ -44,7 +44,7 @@ def get_detailed_bill_info(bill_info):
             else:
                 bill_type += char
         url = BASE_API_URL + "/bill/" + bill_info.split('_')[1] + '/' + bill_type + "/" + bill_number
-        print(url)
+        # print(url)
     else:
         url = bill_info['url']
 

@@ -27,7 +27,8 @@ def download_text(num):
 
 
 def update_bills(log_file):
-    loguru.logger.add(log_file, rotation="1 day", retention="7 days")
+    # retain 5 MB of logs
+    loguru.logger.add(log_file, rotation="5 MB", retention=10)
     loguru.logger.debug("Updated bills and members")
     conn = dbs_worker.set_up_connection()
     print("Updating bills")

@@ -47,7 +47,7 @@ def force_get_data():
 
 @app.route('/api/bill_search_text',methods=['POST'])
 def search_bills_text():
-    print(request.json)
+    # print(request.json)
     bills = propublica_data_worker.search_bills_text(request.json['search_text'])
     # return jsonify(bills)
     dbs_worker.add_bills_with_propublica(dbs_worker.set_up_connection(),bills)
